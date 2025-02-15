@@ -1,0 +1,68 @@
+# =========================
+#  TASK DEFINITIONS
+# =========================
+research_task:
+  description: >
+    Conduct a thorough investigation into the user's specific question on {topic}.
+    Follow these guidelines:
+    1. Focus on the user's query, avoiding irrelevant details.
+    2. Give priority to official government sources, laws, and regulations, then
+       add recognized organizations (UN, WHO, ICAO, Interpol, World Bank) as needed.
+    3. Provide a concise summary of the most relevant points in a formal, academic style.
+    4. If the query is complex or uncertain, show your reasoning chain and specify sources.
+    5. If key details are missing from credible sources, clearly state
+       "Insufficient information available from trusted sources" and propose next steps.
+    6. Summarize complex regulations or legislative references in a structured, readable way.
+
+    Your research should reflect the most recent or current information about {topic}.
+    Replace "State" with the relevant country name(s) as needed.
+  expected_output: >
+    1. A structured list of key findings (bullet points or short paragraphs)
+       directly relevant to {topic}.
+    2. Clear attributions with direct URLs or official document references.
+    3. Indication of any uncertainties or missing information.
+  agent: researcher
+
+
+google_task:
+  description: >
+    Use Serper API to search Google for the latest and most authoritative public
+    resources about {topic}. Collect:
+    - Recent news articles or press releases from credible outlets
+    - Official government or institutional pages referencing {topic}
+    - Relevant academic or think-tank publications
+    Summarize the top useful insights without duplicating the researcher's sources.
+    Focus on information that complements or updates the existing data.
+  expected_output: >
+    A summary of newly discovered resources with:
+    1. Brief annotations describing each source's relevance and credibility
+    2. Direct URLs or citations for each source
+  agent: google_collector
+
+
+reporting_task:
+  description: >
+    Gather and consolidate results from all agents (researcher, google_collector),
+    focusing on a definitive, concise answer to the user's question about {topic}.
+    Then, present a structured explanation that includes additional context, details,
+    and references. If information is lacking from credible sources, explicitly note it
+    and suggest where further data may be found.
+
+    Steps:
+    1. Provide a direct, concise answer to the user's query.
+    2. Follow with a comprehensive explanation, citing specific laws, documents, 
+       or relevant official/institutional sources.
+    3. If certain information is missing, state "Insufficient information available from
+       trusted sources" and recommend further research.
+    4. Adhere to a formal, academic writing style. Use headings or subheadings for clarity,
+       and include URLs or references in a consistent format.
+  depends_on: [research_task, google_task]
+  expected_output: >
+    A response that begins with a short, summarized answer to the query about {topic},
+    immediately addressing the user's main concern. This is followed by a more detailed,
+    well-structured explanation that references any pertinent regulations, articles,
+    government sources, or recognized international organizations. Markdown formatting
+    is acceptable. Citations should be embedded in the text or placed as footnotes
+    as appropriate. If data is insufficient, clearly state so and suggest possible 
+    authoritative avenues for further exploration.
+  agent: reporting_analyst
